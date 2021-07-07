@@ -7,5 +7,7 @@ namespace AspNetCoreWebApp.CloudStorage
     {
         Task<string> UploadFileAsync(IFormFile imageFile, string fileNameForStorage);
         Task DeleteFileAsync(string fileNameForStorage);
+        Task<byte[]> DownloadFile(string FileNameForStorage);
+
     }
 }

@@ -34,5 +34,12 @@ namespace AspNetCoreWebApp.CloudStorage
         {
             await storageClient.DeleteObjectAsync(bucketName, fileNameForStorage);
         }
+
+        public async Task<byte[]> DownloadFile(string FileNameForStorage)
+        {
+            using var memoryStream = new MemoryStream();
+            await storageClient.DownloadObjectAsync(bucketName, FileNameForStorage, memoryStream);
+            return memoryStream.ToArray();
+        }
     }
 }

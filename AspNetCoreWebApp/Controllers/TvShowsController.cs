@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AspNetCoreWebApp.CloudStorage;
+using AspNetCoreWebApp.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using AspNetCoreWebApp.Models;
-using AspNetCoreWebApp.CloudStorage;
-using System.IO;
 
 namespace AspNetCoreWebApp.Controllers
 {
@@ -175,16 +173,10 @@ namespace AspNetCoreWebApp.Controllers
 
         private async Task UploadFile(TvShow tvShow)
         {
-            string fileNameForStorage = FormFileName(tvShow.Title, tvShow.ImageFile.FileName);
-            tvShow.ImageUrl = await _cloudStorage.UploadFileAsync(tvShow.ImageFile, fileNameForStorage);
+            string fileNameForStorage = $"{Guid.NewGuid()}{Path.GetExtension(tvShow.ImageFile.FileName)}".ToLower();
+            await _cloudStorage.UploadFileAsync(tvShow.ImageFile, fileNameForStorage);
+            tvShow.ImageUrl = $"https://localhost:44334/storage/{fileNameForStorage}";
             tvShow.ImageStorageName = fileNameForStorage;
-        }
-
-        private static string FormFileName(string title, string fileName)
-        {
-            var fileExtension = Path.GetExtension(fileName);
-            var fileNameForStorage = $"{title}-{DateTime.Now.ToString("yyyyMMddHHmmss")}{fileExtension}";
-            return fileNameForStorage;
         }
     }
 }

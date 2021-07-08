@@ -175,7 +175,7 @@ namespace AspNetCoreWebApp.Controllers
         {
             string fileNameForStorage = $"{Guid.NewGuid()}{Path.GetExtension(tvShow.ImageFile.FileName)}".ToLower();
             await _cloudStorage.UploadFileAsync(tvShow.ImageFile, fileNameForStorage);
-            tvShow.ImageUrl = $"https://localhost:44334/storage/{fileNameForStorage}";
+            tvShow.ImageUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/storage/{fileNameForStorage}";
             tvShow.ImageStorageName = fileNameForStorage;
         }
     }

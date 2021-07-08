@@ -18,8 +18,12 @@ namespace AspNetCoreWebApp.Controllers
         public async Task<IActionResult> Get(string fileName)
         {
             var contentType = MimeTypes.GetMimeType(fileName);
-            var bytes = await _storage.DownloadFile(fileName);
-            return File(bytes, contentType);
+            var response = await _storage.DownloadFile(fileName);
+
+            if (response.IsSuccessStatusCode)
+                return File(response.Bytes, contentType);
+
+            return StatusCode((int)response.StatusCode);
         }
     }
 }

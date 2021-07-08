@@ -1,8 +1,10 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿using Google;
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace AspNetCoreWebApp.CloudStorage
@@ -35,11 +37,19 @@ namespace AspNetCoreWebApp.CloudStorage
             await storageClient.DeleteObjectAsync(bucketName, fileNameForStorage);
         }
 
-        public async Task<byte[]> DownloadFile(string fileNameForStorage)
+        public async Task<CloudStorageResponse> DownloadFile(string fileNameForStorage)
         {
-            using var memoryStream = new MemoryStream();
-            await storageClient.DownloadObjectAsync(bucketName, fileNameForStorage, memoryStream);
-            return memoryStream.ToArray();
+            try
+            {
+                using var memoryStream = new MemoryStream();
+                await storageClient.DownloadObjectAsync(bucketName, fileNameForStorage, memoryStream);
+                return new CloudStorageResponse(HttpStatusCode.OK, memoryStream.ToArray());
+            }
+            catch (GoogleApiException ex)
+            {
+                return new CloudStorageResponse(ex.HttpStatusCode);
+            }
+
         }
     }
 }

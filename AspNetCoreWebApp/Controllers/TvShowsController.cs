@@ -173,10 +173,16 @@ namespace AspNetCoreWebApp.Controllers
 
         private async Task UploadFile(TvShow tvShow)
         {
-            string fileNameForStorage = $"{Guid.NewGuid()}{Path.GetExtension(tvShow.ImageFile.FileName)}".ToLower();
+            string fileNameForStorage = FormFileName(tvShow.ImageFile.FileName);
             await _cloudStorage.UploadFileAsync(tvShow.ImageFile, fileNameForStorage);
             tvShow.ImageUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/storage/{fileNameForStorage}";
             tvShow.ImageStorageName = fileNameForStorage;
+        }
+        private static string FormFileName(string fileName)
+        {
+            var fileExtension = Path.GetExtension(fileName);
+            var fileNameForStorage = $"{Guid.NewGuid()}{fileExtension}";
+            return fileNameForStorage.ToLower();
         }
     }
 }
